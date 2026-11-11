@@ -39,6 +39,7 @@ function getDashboardHtml(): string {
   <title>RouteReply - Telegram Ingestion & Reviewable Work Route</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
+    * { box-sizing: border-box; }
     body { background-color: #080c14; color: #f1f5f9; font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
     .card { background-color: #0f172a; border: 1px solid #1e293b; }
     .badge-dev { background: rgba(59, 130, 246, 0.15); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.35); }
@@ -46,6 +47,8 @@ function getDashboardHtml(): string {
     .badge-fresh { background: rgba(34, 197, 94, 0.15); color: #4ade80; border: 1px solid rgba(34, 197, 94, 0.35); }
     .badge-sent { background: rgba(168, 85, 247, 0.15); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.35); }
     .badge-live { background: rgba(168, 85, 247, 0.2); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.4); }
+    .truncate { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .min-w-0 { min-width: 0; }
     ::-webkit-scrollbar { width: 6px; height: 6px; }
     ::-webkit-scrollbar-track { background: #0b0f17; }
     ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 4px; }
@@ -55,55 +58,55 @@ function getDashboardHtml(): string {
 <body class="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto min-h-screen flex flex-col justify-between">
   <div>
     <!-- Top Navigation & Health Bar -->
-    <header class="flex flex-col md:flex-row items-start md:items-center justify-between pb-5 border-b border-slate-800 gap-4">
-      <div>
-        <div class="flex flex-wrap items-center gap-2.5">
-          <h1 class="text-xl sm:text-2xl font-bold tracking-tight text-white">RouteReply</h1>
+    <header class="flex flex-col lg:flex-row lg:items-center justify-between pb-5 border-b border-slate-800 gap-4">
+      <div class="min-w-0">
+        <div class="flex flex-wrap items-center gap-2">
+          <h1 class="text-xl sm:text-2xl font-bold tracking-tight text-white mr-1">RouteReply</h1>
           <span class="px-2.5 py-0.5 text-[11px] font-semibold rounded-full badge-dev whitespace-nowrap">HITL Work Copilot</span>
           <span class="px-2.5 py-0.5 text-[11px] font-semibold rounded-full ${isLive ? 'badge-live' : 'badge-dev'} whitespace-nowrap">
             ${isLive ? '● LIVE MTPROTO' : '○ SIMULATION SAFE MODE'}
           </span>
           <span class="text-xs text-slate-400 font-mono px-2 py-0.5 rounded bg-slate-900 border border-slate-800 whitespace-nowrap">AI: ${provider}</span>
         </div>
-        <p class="text-xs sm:text-sm text-slate-400 mt-1">From Telegram post to reviewable work route and human-gated dispatch</p>
+        <p class="text-xs sm:text-sm text-slate-400 mt-1.5 leading-relaxed">From Telegram post to reviewable work route and human-gated dispatch</p>
       </div>
 
       <!-- Live Telegram Gauges -->
-      <div class="flex flex-wrap items-center gap-3 sm:gap-4 bg-slate-900/90 px-3.5 py-2 rounded-xl border border-slate-800 text-xs">
-        <div class="flex items-center gap-2 shrink-0">
+      <div class="flex flex-wrap items-center gap-2 bg-slate-900/90 p-2 sm:px-3.5 sm:py-2 rounded-xl border border-slate-800 text-xs shrink-0">
+        <div class="flex items-center gap-2 px-2.5 py-1 rounded-lg bg-slate-950/70 border border-slate-800/80">
           <span class="w-2.5 h-2.5 rounded-full ${isLive ? 'bg-purple-500 animate-pulse' : 'bg-emerald-500'}"></span>
           <span class="text-slate-300 font-medium">Dispatcher: <strong class="${isLive ? 'text-purple-400' : 'text-emerald-400'}">${isLive ? 'Live MTProto' : 'Verified Sandbox'}</strong></span>
         </div>
-        <div class="border-l border-slate-700/80 pl-3 shrink-0">
-          <span class="text-slate-400">Daily DMs: </span>
+        <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-950/70 border border-slate-800/80">
+          <span class="text-slate-400">Daily DMs:</span>
           <span id="daily-count" class="font-bold text-white font-mono">0 / 20</span>
         </div>
-        <div class="border-l border-slate-700/80 pl-3 shrink-0">
-          <span class="text-slate-400">FloodWait: </span>
+        <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-950/70 border border-slate-800/80">
+          <span class="text-slate-400">FloodWait:</span>
           <span id="flood-wait" class="font-bold text-emerald-400 font-mono">0s</span>
         </div>
       </div>
     </header>
 
     <!-- Controls & Action Surfaces -->
-    <div class="my-5 grid grid-cols-1 md:grid-cols-12 gap-4">
+    <div class="my-5 grid grid-cols-1 lg:grid-cols-12 gap-4">
       <!-- Bounded Run Control -->
-      <section class="md:col-span-8 p-4 sm:p-5 card rounded-xl shadow-sm flex flex-col justify-between">
-        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-          <div>
-            <h2 class="text-sm font-semibold text-white flex items-center gap-2">
-              <span>Bounded Ingestion Run</span>
-              <span class="text-[11px] font-normal text-slate-400">(Operator-initiated)</span>
+      <section class="lg:col-span-8 p-4 sm:p-5 card rounded-xl shadow-sm flex flex-col justify-between overflow-hidden">
+        <div class="flex flex-col xl:flex-row xl:items-center justify-between gap-3">
+          <div class="min-w-0">
+            <h2 class="text-sm font-semibold text-white">
+              Bounded Ingestion Run
+              <span class="text-[11px] font-normal text-slate-400 inline-block ml-1.5">(Operator-initiated)</span>
             </h2>
-            <p class="text-xs text-slate-400 mt-0.5">Collect publications, run 5-stage explainable filters, and prepare draft context.</p>
+            <p class="text-xs text-slate-400 mt-1 leading-relaxed">Collect publications, run 5-stage explainable filters, and prepare draft context.</p>
           </div>
-          <div class="flex items-center gap-2 w-full sm:w-auto">
-            <select id="run-hours" class="bg-slate-900 border border-slate-700 text-slate-300 text-xs rounded-lg px-2.5 py-1.5 focus:outline-none focus:border-blue-500 shrink-0">
+          <div class="flex flex-wrap sm:flex-nowrap items-center gap-2 w-full xl:w-auto mt-1 xl:mt-0 shrink-0">
+            <select id="run-hours" class="bg-slate-900 border border-slate-700 text-slate-300 text-xs rounded-lg px-3 py-2 focus:outline-none focus:border-blue-500 w-full sm:w-auto">
               <option value="6">Last 6 Hours</option>
               <option value="24" selected>Last 24 Hours</option>
               <option value="48">Last 48 Hours</option>
             </select>
-            <button id="btn-run" onclick="triggerBoundedRun()" class="bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold px-3.5 py-1.5 rounded-lg transition-colors flex items-center justify-center gap-1.5 shrink-0 shadow-sm">
+            <button id="btn-run" onclick="triggerBoundedRun()" class="bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold px-4 py-2 rounded-lg transition-colors flex items-center justify-center gap-1.5 shadow-sm whitespace-nowrap w-full sm:w-auto shrink-0">
               <span>Start Bounded Run</span>
             </button>
           </div>
@@ -112,16 +115,16 @@ function getDashboardHtml(): string {
       </section>
 
       <!-- Manage Rules & Personas Triggers -->
-      <section class="md:col-span-4 p-4 sm:p-5 card rounded-xl shadow-sm flex flex-col justify-between gap-2.5">
+      <section class="lg:col-span-4 p-4 sm:p-5 card rounded-xl shadow-sm flex flex-col justify-between gap-3 overflow-hidden">
         <div>
           <h3 class="text-sm font-semibold text-white">System Controls</h3>
-          <p class="text-xs text-slate-400 mt-0.5">Manage filter keywords, exclusions, and candidate CV personas.</p>
+          <p class="text-xs text-slate-400 mt-1 leading-relaxed">Manage filter keywords, exclusions, and candidate CV personas.</p>
         </div>
         <div class="grid grid-cols-2 gap-2 mt-1">
-          <button onclick="toggleRulesModal()" class="px-2.5 py-1.5 bg-slate-800/90 hover:bg-slate-700 text-slate-200 text-xs font-medium rounded-lg border border-slate-700 transition-colors text-center truncate">
+          <button onclick="toggleRulesModal()" class="px-3 py-2 bg-slate-800/90 hover:bg-slate-700 text-slate-200 text-xs font-medium rounded-lg border border-slate-700 transition-colors text-center truncate">
             Filter Rules
           </button>
-          <button onclick="togglePersonasModal()" class="px-2.5 py-1.5 bg-slate-800/90 hover:bg-slate-700 text-slate-200 text-xs font-medium rounded-lg border border-slate-700 transition-colors text-center truncate">
+          <button onclick="togglePersonasModal()" class="px-3 py-2 bg-slate-800/90 hover:bg-slate-700 text-slate-200 text-xs font-medium rounded-lg border border-slate-700 transition-colors text-center truncate">
             CV Personas
           </button>
         </div>
@@ -129,9 +132,9 @@ function getDashboardHtml(): string {
     </div>
 
     <!-- Review Queue Layout -->
-    <main class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+    <main class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
       <!-- Queue Sidebar -->
-      <aside class="lg:col-span-5 flex flex-col gap-3">
+      <aside class="lg:col-span-5 flex flex-col gap-3 min-w-0">
         <!-- Search and Filter Bar -->
         <div class="flex flex-col gap-2">
           <div class="flex items-center justify-between">
@@ -139,24 +142,24 @@ function getDashboardHtml(): string {
             <span id="queue-badge" class="px-2 py-0.5 text-[11px] rounded-full bg-slate-800 text-slate-300 font-mono">0 items</span>
           </div>
           <!-- Filter Tabs -->
-          <div class="flex items-center gap-1 bg-slate-900/90 p-1 rounded-lg border border-slate-800 text-[11px]">
-            <button onclick="setStatusFilter('ALL')" id="filter-all" class="px-2.5 py-1 rounded font-medium bg-blue-600 text-white transition-colors">All</button>
-            <button onclick="setStatusFilter('READY')" id="filter-ready" class="px-2.5 py-1 rounded font-medium text-slate-400 hover:text-white transition-colors">Ready</button>
-            <button onclick="setStatusFilter('STALE')" id="filter-stale" class="px-2.5 py-1 rounded font-medium text-slate-400 hover:text-white transition-colors">Stale</button>
-            <button onclick="setStatusFilter('SENT')" id="filter-sent" class="px-2.5 py-1 rounded font-medium text-slate-400 hover:text-white transition-colors">Sent</button>
+          <div class="flex items-center gap-1 bg-slate-900/90 p-1 rounded-lg border border-slate-800 text-[11px] overflow-x-auto">
+            <button onclick="setStatusFilter('ALL')" id="filter-all" class="flex-1 px-2.5 py-1.5 rounded font-medium bg-blue-600 text-white transition-colors text-center whitespace-nowrap">All</button>
+            <button onclick="setStatusFilter('READY')" id="filter-ready" class="flex-1 px-2.5 py-1.5 rounded font-medium text-slate-400 hover:text-white transition-colors text-center whitespace-nowrap">Ready</button>
+            <button onclick="setStatusFilter('STALE')" id="filter-stale" class="flex-1 px-2.5 py-1.5 rounded font-medium text-slate-400 hover:text-white transition-colors text-center whitespace-nowrap">Stale</button>
+            <button onclick="setStatusFilter('SENT')" id="filter-sent" class="flex-1 px-2.5 py-1.5 rounded font-medium text-slate-400 hover:text-white transition-colors text-center whitespace-nowrap">Sent</button>
           </div>
           <!-- Search Input -->
-          <input id="search-input" oninput="applyFilters()" type="text" placeholder="Search contact, role, or stack..." class="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-1.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-blue-500">
+          <input id="search-input" oninput="applyFilters()" type="text" placeholder="Search contact, role, or stack..." class="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 min-w-0">
         </div>
 
         <!-- Scrollable Queue Cards -->
-        <div id="queue-list" class="flex flex-col gap-2.5 max-h-[600px] overflow-y-auto pr-1">
+        <div id="queue-list" class="flex flex-col gap-2.5 max-h-[640px] overflow-y-auto pr-1">
           <div class="text-xs text-slate-500 p-6 text-center">Loading queue...</div>
         </div>
       </aside>
 
       <!-- Detail Review Surface -->
-      <section class="lg:col-span-7 card rounded-xl p-5 sm:p-6 shadow-sm flex flex-col justify-between">
+      <section class="lg:col-span-7 card rounded-xl p-4 sm:p-6 shadow-sm flex flex-col justify-between overflow-hidden min-w-0">
         <div id="detail-view" class="h-full flex flex-col justify-center items-center text-slate-500 text-xs text-center p-8">
           Select a task from the review queue to inspect provenance, matched CV facts, and authorize human-gated dispatch.
         </div>
@@ -323,14 +326,14 @@ function getDashboardHtml(): string {
 
         return \`
           <div onclick="selectTask('\${t.id}')" class="cursor-pointer p-3.5 rounded-xl border transition-all \${isSelected ? 'bg-slate-800/90 border-blue-500 shadow-sm' : 'bg-slate-900/60 border-slate-800 hover:border-slate-700'}">
-            <div class="flex items-start justify-between gap-2">
-              <span class="text-xs font-bold text-white truncate max-w-[200px]">\${t.vacancy.roleTitle || 'Opportunity'}</span>
+            <div class="flex items-start justify-between gap-2 min-w-0">
+              <span class="text-xs font-bold text-white truncate min-w-0 flex-1">\${t.vacancy.roleTitle || 'Opportunity'}</span>
               <span class="text-[10px] font-mono px-2 py-0.5 rounded-full \${badgeClass} shrink-0">\${badgeText}</span>
             </div>
-            <div class="text-xs text-slate-400 mt-1 flex items-center gap-1.5 truncate">
+            <div class="text-xs text-slate-400 mt-1 flex items-center gap-1.5 min-w-0">
               <span class="text-blue-400 font-mono shrink-0">\${t.vacancy.extractedContact}</span>
-              <span class="text-slate-600">&bull;</span>
-              <span class="truncate">\${t.vacancy.budgetInfo || 'Rate not specified'}</span>
+              <span class="text-slate-600 shrink-0">&bull;</span>
+              <span class="truncate min-w-0 text-slate-400">\${t.vacancy.budgetInfo || 'Rate not specified'}</span>
             </div>
             <div class="text-[11px] text-slate-500 mt-1.5 line-clamp-2 leading-relaxed">\${t.publication.rawText}</div>
           </div>
@@ -358,30 +361,32 @@ function getDashboardHtml(): string {
         <div class="w-full h-full flex flex-col justify-between gap-4">
           <div>
             <!-- Header & Recipient -->
-            <div class="flex flex-col sm:flex-row sm:items-start justify-between border-b border-slate-800 pb-3 gap-2">
-              <div>
-                <span class="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">Target Contact</span>
-                <div class="flex items-center gap-2 mt-0.5">
-                  <h2 class="text-base sm:text-lg font-bold text-white font-mono truncate">\${task.vacancy.extractedContact}</h2>
+            <div class="flex flex-col sm:flex-row sm:items-start justify-between border-b border-slate-800 pb-3.5 gap-3">
+              <div class="min-w-0 flex-1">
+                <div class="flex items-center gap-2">
+                  <span class="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">Target Contact</span>
                   <span class="px-2 py-0.5 rounded bg-slate-800 text-slate-300 font-mono text-[10px] shrink-0">\${task.vacancy.contactType}</span>
                 </div>
+                <div class="mt-1">
+                  <h2 class="text-base sm:text-lg font-bold text-white font-mono break-all">\${task.vacancy.extractedContact}</h2>
+                </div>
                 <div class="text-xs text-slate-400 mt-2 flex flex-wrap items-center gap-2">
-                  <span>Persona:</span>
-                  <select onchange="switchPersona('\${task.id}', this.value)" class="bg-slate-900 border border-slate-700 text-slate-200 text-xs rounded px-2 py-1 focus:outline-none">
+                  <span class="shrink-0 font-medium text-slate-300">Persona:</span>
+                  <select onchange="switchPersona('\${task.id}', this.value)" class="bg-slate-900 border border-slate-700 text-slate-200 text-xs rounded-lg px-2.5 py-1.5 focus:outline-none max-w-full">
                     \${profileOptions}
                   </select>
                 </div>
               </div>
-              <div class="sm:text-right shrink-0">
+              <div class="sm:text-right shrink-0 flex flex-col items-start sm:items-end gap-1">
                 <span class="text-[10px] text-slate-500 font-mono">Context: \${task.contextHash.slice(0, 10)}...</span>
-                <div class="mt-1">
-                  \${isSent ? '<span class="text-xs text-purple-400 font-bold">✓ DELIVERED TO TELEGRAM</span>' : isStale ? '<span class="text-xs text-red-400 font-bold">⚠ STALE DRAFT (BLOCKED)</span>' : '<span class="text-xs text-emerald-400 font-bold">● READY FOR DISPATCH</span>'}
+                <div class="mt-0.5">
+                  \${isSent ? '<span class="text-xs text-purple-400 font-bold whitespace-nowrap bg-purple-950/60 border border-purple-800/80 px-2.5 py-1 rounded-lg">✓ DELIVERED</span>' : isStale ? '<span class="text-xs text-rose-400 font-bold whitespace-nowrap bg-rose-950/60 border border-rose-800/80 px-2.5 py-1 rounded-lg">⚠ STALE DRAFT</span>' : '<span class="text-xs text-emerald-400 font-bold whitespace-nowrap bg-emerald-950/60 border border-emerald-800/80 px-2.5 py-1 rounded-lg">● READY FOR DISPATCH</span>'}
                 </div>
               </div>
             </div>
 
             <!-- Provenance & Source Text -->
-            <div class="mt-3.5 bg-slate-950/80 p-3 rounded-xl border border-slate-800">
+            <div class="mt-3.5 bg-slate-950/80 p-3.5 rounded-xl border border-slate-800">
               <span class="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">Originating Telegram Publication</span>
               <p class="text-xs text-slate-300 mt-1 whitespace-pre-wrap leading-relaxed max-h-36 overflow-y-auto">\${task.publication.rawText}</p>
             </div>
@@ -391,12 +396,12 @@ function getDashboardHtml(): string {
               <div class="flex items-center justify-between mb-1.5 flex-wrap gap-2">
                 <span class="text-xs font-semibold text-slate-300">Context-Aware Outreach Draft</span>
                 <div class="flex items-center gap-2">
-                  <select id="ai-provider" class="bg-slate-900 border border-slate-700 text-slate-300 text-[11px] rounded px-2 py-1">
+                  <select id="ai-provider" class="bg-slate-900 border border-slate-700 text-slate-300 text-[11px] rounded-lg px-2.5 py-1">
                     <option value="gemini">Gemini API</option>
                     <option value="ollama">Ollama Local</option>
                     <option value="deterministic">Deterministic Fast</option>
                   </select>
-                  <button onclick="regenerateDraft('\${task.id}')" \${isSent ? 'disabled' : ''} class="text-[11px] text-blue-400 hover:text-blue-300 underline font-medium disabled:opacity-40">
+                  <button onclick="regenerateDraft('\${task.id}')" \${isSent ? 'disabled' : ''} class="text-[11px] text-blue-400 hover:text-blue-300 underline font-medium disabled:opacity-40 whitespace-nowrap">
                     Regenerate AI
                   </button>
                 </div>
@@ -406,15 +411,15 @@ function getDashboardHtml(): string {
           </div>
 
           <!-- Human Action Control Footer -->
-          <div class="pt-3 border-t border-slate-800 flex flex-wrap sm:flex-nowrap items-center justify-between gap-3">
-            <button onclick="rejectTask('\${task.id}')" \${isSent ? 'disabled' : ''} class="w-full sm:w-auto px-3 py-2 rounded-lg text-xs font-semibold text-rose-400 hover:bg-rose-950/40 border border-rose-900/60 transition-colors disabled:opacity-40 shrink-0">
+          <div class="pt-3.5 border-t border-slate-800 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+            <button onclick="rejectTask('\${task.id}')" \${isSent ? 'disabled' : ''} class="px-3.5 py-2 rounded-lg text-xs font-semibold text-rose-400 hover:bg-rose-950/40 border border-rose-900/60 transition-colors disabled:opacity-40 text-center">
               Reject Lead
             </button>
-            <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
-              <button onclick="saveDraft('\${task.id}')" \${isSent ? 'disabled' : ''} class="px-3.5 py-2 rounded-lg text-xs font-semibold text-slate-300 hover:bg-slate-800 border border-slate-700 transition-colors disabled:opacity-40 shrink-0">
+            <div class="flex items-center gap-2 justify-end">
+              <button onclick="saveDraft('\${task.id}')" \${isSent ? 'disabled' : ''} class="flex-1 sm:flex-initial px-3.5 py-2 rounded-lg text-xs font-semibold text-slate-300 hover:bg-slate-800 border border-slate-700 transition-colors disabled:opacity-40 text-center whitespace-nowrap">
                 Save Draft
               </button>
-              <button onclick="dispatchTask('\${task.id}')" \${isSent || isStale ? 'disabled' : ''} class="px-4 py-2 rounded-lg text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white shadow-sm transition-all disabled:opacity-40 disabled:cursor-not-allowed shrink-0 flex items-center gap-1.5">
+              <button onclick="dispatchTask('\${task.id}')" \${isSent || isStale ? 'disabled' : ''} class="flex-1 sm:flex-initial px-4 py-2 rounded-lg text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white shadow-sm transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-1.5 whitespace-nowrap">
                 <span>Approve & Send</span>
               </button>
             </div>
