@@ -3,6 +3,7 @@ import type { StorageEngine } from "../core/db.js";
 import type { Dispatch } from "../core/types.js";
 import { FreshnessGuard } from "../replies/freshness.js";
 import { DispatchRateLimiter } from "./rate-limiter.js";
+import { createTelegramDriver, type ITelegramDriver } from "./mtproto-client.js";
 
 export interface DispatchExecutionResult {
   success: boolean;
@@ -10,18 +11,22 @@ export interface DispatchExecutionResult {
   dispatchId: string;
   recipientHandle: string;
   tgMessageId?: number;
+  isRealDispatch?: boolean;
   errorMessage?: string;
 }
 
 export class TelegramDispatcher {
   private isControllerLocked: boolean = false;
   private freshnessGuard: FreshnessGuard;
+  private driver: ITelegramDriver;
 
   constructor(
     private storage: StorageEngine,
-    private rateLimiter: DispatchRateLimiter = new DispatchRateLimiter()
+    private rateLimiter: DispatchRateLimiter = new DispatchRateLimiter(),
+    driver?: ITelegramDriver
   ) {
     this.freshnessGuard = new FreshnessGuard(storage);
+    this.driver = driver || createTelegramDriver();
   }
 
   /**
@@ -76,13 +81,11 @@ export class TelegramDispatcher {
       };
       this.storage.insertDispatch(dispatchRecord);
 
-      // 6. External MTProto Send boundary
-      // In production, this invokes GramJS client.sendMessage(recipientHandle, { message: sentText })
-      // For verified acceptance tests, we simulate server confirmation.
-      const simulatedServerMessageId = Math.floor(100000 + Math.random() * 900000);
+      // 6. MTProto / Telegram Send boundary via active driver
+      const sendResult = await this.driver.sendMessage(vacancy.extractedContact, task.draftText);
 
       // 7. Verifiable Delivery Confirmation: Invariant from Section 3
-      this.storage.updateDispatchStatus(dispatchId, "CONFIRMED", simulatedServerMessageId);
+      this.storage.updateDispatchStatus(dispatchId, "CONFIRMED", sendResult.serverMessageId);
 
       // 8. Update task status to SENT
       this.storage.upsertReplyTask({
@@ -96,7 +99,7 @@ export class TelegramDispatcher {
         id: crypto.randomUUID(),
         conversationId: vacancy.extractedContact,
         senderType: "OUTBOUND_OPERATOR",
-        tgMessageId: simulatedServerMessageId,
+        tgMessageId: sendResult.serverMessageId,
         messageText: task.draftText,
         receivedAt: new Date().toISOString()
       });
@@ -106,7 +109,8 @@ export class TelegramDispatcher {
         replyTaskId: task.id,
         dispatchId,
         recipientHandle: vacancy.extractedContact,
-        tgMessageId: simulatedServerMessageId
+        tgMessageId: sendResult.serverMessageId,
+        isRealDispatch: sendResult.isRealDispatch
       };
     } catch (err: any) {
       // Record failure on dispatch record if it was inserted

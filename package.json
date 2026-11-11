@@ -31,10 +31,11 @@
   "author": "Alexandr Motologa",
   "license": "MIT",
   "dependencies": {
+    "@fastify/cors": "^10.0.2",
     "commander": "^13.1.0",
     "fastify": "^5.2.1",
-    "@fastify/cors": "^10.0.2",
     "picocolors": "^1.1.1",
+    "telegram": "^2.26.22",
     "zod": "^3.24.2"
   },
   "devDependencies": {

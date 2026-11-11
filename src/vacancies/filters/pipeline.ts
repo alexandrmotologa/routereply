@@ -49,8 +49,9 @@ export class FilterPipeline {
       };
     }
 
-    // Stage 2: Keywords
-    const s2 = evaluateKeywords(pub);
+    // Stage 2: Keywords (using dynamic rules from SQLite)
+    const keywords = this.storage.getFilterRules("keyword");
+    const s2 = evaluateKeywords(pub, keywords.length > 0 ? keywords : undefined);
     const run2: FilterRun = {
       id: crypto.randomUUID(),
       publicationId: pub.id,
@@ -72,8 +73,9 @@ export class FilterPipeline {
       };
     }
 
-    // Stage 3: Exclusions
-    const s3 = evaluateExclusions(pub);
+    // Stage 3: Exclusions (using dynamic rules from SQLite)
+    const exclusions = this.storage.getFilterRules("exclusion");
+    const s3 = evaluateExclusions(pub, exclusions.length > 0 ? exclusions : undefined);
     const run3: FilterRun = {
       id: crypto.randomUUID(),
       publicationId: pub.id,
@@ -95,8 +97,9 @@ export class FilterPipeline {
       };
     }
 
-    // Stage 4: Contacts
-    const s4 = evaluateContactResolution(pub);
+    // Stage 4: Contacts (ignoring channel's own handle)
+    const channel = this.storage.getActiveChannels().find((c) => c.id === pub.channelId);
+    const s4 = evaluateContactResolution(pub, channel?.username);
     const run4: FilterRun = {
       id: crypto.randomUUID(),
       publicationId: pub.id,

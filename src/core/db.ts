@@ -144,7 +144,69 @@ export class StorageEngine {
       );
 
       CREATE INDEX IF NOT EXISTS idx_conversation_id ON conversation_messages(conversation_id);
+
+      CREATE TABLE IF NOT EXISTS filter_rules (
+        id TEXT PRIMARY KEY,
+        rule_type TEXT NOT NULL,       -- 'keyword' or 'exclusion'
+        pattern TEXT NOT NULL,
+        is_active INTEGER DEFAULT 1,
+        created_at TEXT DEFAULT (datetime('now'))
+      );
+
+      CREATE UNIQUE INDEX IF NOT EXISTS idx_filter_rules_unique ON filter_rules(rule_type, pattern);
     `);
+    this.seedDefaultFilterRules();
+  }
+
+  public seedDefaultFilterRules(): void {
+    const defaultKeywords = [
+      "typescript", "javascript", "node", "nodejs", "python", "fastapi",
+      "react", "react native", "next.js", "nextjs", "expo", "sqlite",
+      "fullstack", "frontend", "backend", "engineer", "developer",
+      "contract", "agent", "llm", "ai", "telegram bot", "mtproto", "automation"
+    ];
+
+    const defaultExclusions = [
+      "unpaid", "unpaid internship", "100% commission", "commission only",
+      "native tokens after pre-sale", "must relocate", "relocation required",
+      "no remote", "onsite only", "volunteer", "financial accountant",
+      "customer support", "barista"
+    ];
+
+    const insertStmt = this.db.prepare(`
+      INSERT OR IGNORE INTO filter_rules (id, rule_type, pattern, is_active)
+      VALUES (?, ?, ?, 1)
+    `);
+
+    for (const kw of defaultKeywords) {
+      insertStmt.run(`kw_${kw.replace(/[^a-z0-9]/gi, "_")}`, "keyword", kw);
+    }
+    for (const exc of defaultExclusions) {
+      insertStmt.run(`exc_${exc.replace(/[^a-z0-9]/gi, "_")}`, "exclusion", exc);
+    }
+  }
+
+  public getFilterRules(ruleType?: "keyword" | "exclusion"): string[] {
+    let rows: any[];
+    if (ruleType) {
+      rows = this.db.prepare("SELECT pattern FROM filter_rules WHERE rule_type = ? AND is_active = 1").all(ruleType) as any[];
+    } else {
+      rows = this.db.prepare("SELECT pattern FROM filter_rules WHERE is_active = 1").all() as any[];
+    }
+    return rows.map((r) => r.pattern);
+  }
+
+  public addFilterRule(ruleType: "keyword" | "exclusion", pattern: string): void {
+    const id = `${ruleType.slice(0, 3)}_${pattern.toLowerCase().replace(/[^a-z0-9]/gi, "_")}`;
+    this.db.prepare(`
+      INSERT INTO filter_rules (id, rule_type, pattern, is_active)
+      VALUES (?, ?, ?, 1)
+      ON CONFLICT(rule_type, pattern) DO UPDATE SET is_active = 1
+    `).run(id, ruleType, pattern.trim().toLowerCase());
+  }
+
+  public removeFilterRule(ruleType: "keyword" | "exclusion", pattern: string): void {
+    this.db.prepare("DELETE FROM filter_rules WHERE rule_type = ? AND pattern = ?").run(ruleType, pattern.trim().toLowerCase());
   }
 
   // --- Channel Operations ---

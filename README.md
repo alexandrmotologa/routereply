@@ -107,6 +107,14 @@ The `routereply` command-line utility provides complete control over ingestion, 
 # Seed synthetic test channels, profiles, and publications
 node bin/routereply.js seed
 
+# Import real channel exports from Telegram Desktop (result.json)
+node bin/routereply.js import-tg ./export_result.json
+
+# Manage dynamic filter rules directly from terminal
+node bin/routereply.js rule list
+node bin/routereply.js rule add keyword rust
+node bin/routereply.js rule add exclusion wordpress
+
 # Execute a bounded ingestion run across active channels
 node bin/routereply.js run --hours 24 --max 50
 
@@ -125,6 +133,29 @@ node bin/routereply.js studio --port 3333
 
 ---
 
+## Configuration (.env)
+
+Copy `.env.example` to `.env` to configure live credentials and AI models:
+
+```bash
+# Telegram MTProto (Optional: without these, runs in safe simulation mode)
+TELEGRAM_API_ID=
+TELEGRAM_API_HASH=
+TELEGRAM_SESSION_STRING=
+DISPATCH_MODE=simulation   # Set to 'live' for real network sends
+
+# AI Provider: 'gemini', 'ollama', or 'deterministic'
+LLM_PROVIDER=gemini
+GEMINI_API_KEY=
+GEMINI_MODEL=gemini-2.5-flash
+
+# Local Ollama
+OLLAMA_HOST=http://localhost:11434
+OLLAMA_MODEL=qwen2.5-coder:latest
+```
+
+---
+
 ## REST API Reference
 
 The embedded Fastify server exposes endpoints for dashboard integrations:
@@ -137,8 +168,13 @@ The embedded Fastify server exposes endpoints for dashboard integrations:
 | `GET` | `/api/filter-runs/:pubId` | View explainable five-stage filter audit for a post. |
 | `GET` | `/api/queue` | Retrieve the operator review queue with live freshness checks. |
 | `POST` | `/api/tasks/:id/update-draft` | Edit draft copy or switch matched candidate profile. |
+| `POST` | `/api/tasks/:id/regenerate` | Regenerate draft with Gemini, Ollama, or deterministic engine. |
 | `POST` | `/api/tasks/:id/reject` | Discard work item and cancel draft. |
 | `POST` | `/api/tasks/:id/dispatch` | Human-gated command executing MTProto send. |
+| `GET` | `/api/rules` | List active keyword and exclusion filter rules. |
+| `POST` | `/api/rules/add` | Add a new filter keyword or exclusion rule. |
+| `POST` | `/api/rules/remove` | Delete a filter rule. |
+| `GET` | `/api/profiles` | List all candidate personas for multi-CV switching. |
 | `GET` | `/api/conversations/:contact` | Retrieve synchronized message history for a contact. |
 
 ---

@@ -5,7 +5,7 @@ import { StorageEngine } from "../core/db.js";
 import { DispatchRateLimiter } from "../dispatcher/rate-limiter.js";
 import { TelegramDispatcher } from "../dispatcher/sender.js";
 import { registerRoutes } from "./routes.js";
-import { seedDatabase } from "../fixtures/seed.js";
+import { loadConfig } from "../core/config.js";
 
 export async function createServer(dbPath: string = ":memory:") {
   const app = fastify({ logger: false });
@@ -27,6 +27,10 @@ export async function createServer(dbPath: string = ":memory:") {
 }
 
 function getDashboardHtml(): string {
+  const config = loadConfig();
+  const isLive = config.telegram.mode === "live";
+  const provider = config.llm.provider.toUpperCase();
+
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -39,6 +43,7 @@ function getDashboardHtml(): string {
     .badge-dev { background: rgba(59, 130, 246, 0.2); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.4); }
     .badge-stale { background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.4); }
     .badge-fresh { background: rgba(34, 197, 94, 0.2); color: #4ade80; border: 1px solid rgba(34, 197, 94, 0.4); }
+    .badge-live { background: rgba(168, 85, 247, 0.2); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.4); }
     .card { background-color: #131c2e; border: 1px solid #1e293b; }
   </style>
 </head>
@@ -49,7 +54,10 @@ function getDashboardHtml(): string {
       <div class="flex items-center gap-3">
         <h1 class="text-2xl font-bold tracking-tight text-white">RouteReply</h1>
         <span class="px-2.5 py-0.5 text-xs font-semibold rounded-full badge-dev">HITL Work Copilot</span>
-        <span class="text-xs text-slate-400">Node.js + MTProto Guard</span>
+        <span class="px-2.5 py-0.5 text-xs font-semibold rounded-full ${isLive ? 'badge-live' : 'badge-dev'}">
+          ${isLive ? '● LIVE MTPROTO' : '○ SIMULATION SAFE MODE'}
+        </span>
+        <span class="text-xs text-slate-400 font-mono">AI: ${provider}</span>
       </div>
       <p class="text-sm text-slate-400 mt-1">From Telegram post to reviewable work route and human-gated dispatch</p>
     </div>
@@ -57,8 +65,8 @@ function getDashboardHtml(): string {
     <!-- Live Telegram Gauges -->
     <div class="flex items-center gap-4 bg-slate-900/80 px-4 py-2.5 rounded-lg border border-slate-800 text-xs">
       <div class="flex items-center gap-2">
-        <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
-        <span class="text-slate-300 font-medium">Telegram MTProto: <strong class="text-emerald-400">Online</strong></span>
+        <span class="w-2.5 h-2.5 rounded-full ${isLive ? 'bg-purple-500 animate-pulse' : 'bg-emerald-500'}"></span>
+        <span class="text-slate-300 font-medium">Dispatcher: <strong class="${isLive ? 'text-purple-400' : 'text-emerald-400'}">${isLive ? 'Live MTProto' : 'Verified Sandbox'}</strong></span>
       </div>
       <div class="border-l border-slate-700 pl-4">
         <span class="text-slate-400">Daily DMs: </span>
@@ -71,29 +79,43 @@ function getDashboardHtml(): string {
     </div>
   </header>
 
-  <!-- Bounded Run Control Surface -->
-  <section class="my-6 p-5 card rounded-xl shadow-lg">
-    <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+  <!-- Controls & Rules Bar -->
+  <div class="my-6 grid grid-cols-1 md:grid-cols-12 gap-4">
+    <!-- Bounded Run Control -->
+    <section class="md:col-span-8 p-5 card rounded-xl shadow-lg">
+      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div>
+          <h2 class="text-base font-semibold text-white flex items-center gap-2">
+            <span>Bounded Ingestion Run</span>
+            <span class="text-xs font-normal text-slate-400">(Operator-initiated)</span>
+          </h2>
+          <p class="text-xs text-slate-400 mt-0.5">Collect publications, run 5-stage explainable filters, and prepare draft context.</p>
+        </div>
+        <div class="flex items-center gap-3">
+          <select id="run-hours" class="bg-slate-900 border border-slate-700 text-slate-300 text-xs rounded-lg px-3 py-2">
+            <option value="6">Last 6 Hours</option>
+            <option value="24" selected>Last 24 Hours</option>
+            <option value="48">Last 48 Hours</option>
+          </select>
+          <button id="btn-run" onclick="triggerBoundedRun()" class="bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold px-4 py-2 rounded-lg transition-colors flex items-center gap-2">
+            <span>Start Bounded Run</span>
+          </button>
+        </div>
+      </div>
+      <div id="run-summary" class="hidden mt-4 pt-4 border-t border-slate-800 text-xs grid grid-cols-2 sm:grid-cols-4 gap-4"></div>
+    </section>
+
+    <!-- Quick Rule Filter Drawer Trigger -->
+    <section class="md:col-span-4 p-5 card rounded-xl shadow-lg flex flex-col justify-between">
       <div>
-        <h2 class="text-base font-semibold text-white flex items-center gap-2">
-          <span>Bounded Ingestion Run</span>
-          <span class="text-xs font-normal text-slate-400">(Operator-initiated, non-continuous)</span>
-        </h2>
-        <p class="text-xs text-slate-400 mt-0.5">Collect publications, run multi-stage explainable filters, and prepare draft context.</p>
+        <h3 class="text-sm font-semibold text-white">Dynamic Filter Rules</h3>
+        <p class="text-xs text-slate-400 mt-1">Configure active tech stack keywords and disqualifying exclusion rules.</p>
       </div>
-      <div class="flex items-center gap-3">
-        <select id="run-hours" class="bg-slate-900 border border-slate-700 text-slate-300 text-xs rounded-lg px-3 py-2">
-          <option value="6">Last 6 Hours</option>
-          <option value="24" selected>Last 24 Hours</option>
-          <option value="48">Last 48 Hours</option>
-        </select>
-        <button id="btn-run" onclick="triggerBoundedRun()" class="bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold px-4 py-2 rounded-lg transition-colors flex items-center gap-2">
-          <span>Start Bounded Run</span>
-        </button>
-      </div>
-    </div>
-    <div id="run-summary" class="hidden mt-4 pt-4 border-t border-slate-800 text-xs grid grid-cols-2 sm:grid-cols-4 gap-4"></div>
-  </section>
+      <button onclick="toggleRulesModal()" class="mt-3 px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold rounded-lg border border-slate-700 transition-colors flex items-center justify-center gap-2">
+        <span>Manage Filter Keywords</span>
+      </button>
+    </section>
+  </div>
 
   <!-- Review Queue Layout -->
   <main class="grid grid-cols-1 lg:grid-cols-12 gap-6">
@@ -116,18 +138,52 @@ function getDashboardHtml(): string {
     </section>
   </main>
 
+  <!-- Filter Rules Modal -->
+  <div id="rules-modal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-700 rounded-xl p-6 max-w-2xl w-full max-h-[85vh] overflow-y-auto shadow-2xl">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <h3 class="text-lg font-bold text-white">Manage Filter Rules</h3>
+        <button onclick="toggleRulesModal()" class="text-slate-400 hover:text-white text-sm font-mono">&times; Close</button>
+      </div>
+
+      <!-- Add Rule Input -->
+      <div class="mt-4 flex gap-2">
+        <select id="new-rule-type" class="bg-slate-800 border border-slate-700 text-xs text-slate-200 rounded-lg px-3 py-2">
+          <option value="keyword">Target Keyword (+)</option>
+          <option value="exclusion">Exclusion (-)</option>
+        </select>
+        <input id="new-rule-pattern" type="text" placeholder="e.g. rust, golang, unpaid, wordpress" class="flex-1 bg-slate-800 border border-slate-700 text-xs text-white rounded-lg px-3 py-2 focus:outline-none focus:border-blue-500">
+        <button onclick="addNewRule()" class="bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold px-4 py-2 rounded-lg">Add Rule</button>
+      </div>
+
+      <div class="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <h4 class="text-xs font-semibold uppercase tracking-wider text-emerald-400 mb-2">Target Tech Keywords</h4>
+          <div id="rules-keywords-list" class="flex flex-wrap gap-1.5 max-h-48 overflow-y-auto p-2 bg-slate-950 rounded-lg border border-slate-800"></div>
+        </div>
+        <div>
+          <h4 class="text-xs font-semibold uppercase tracking-wider text-rose-400 mb-2">Disqualifying Exclusions</h4>
+          <div id="rules-exclusions-list" class="flex flex-wrap gap-1.5 max-h-48 overflow-y-auto p-2 bg-slate-950 rounded-lg border border-slate-800"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script>
     let currentTasks = [];
     let selectedTaskId = null;
+    let candidateProfiles = [];
 
     async function loadData() {
       try {
-        const [healthRes, queueRes] = await Promise.all([
+        const [healthRes, queueRes, profilesRes] = await Promise.all([
           fetch('/api/health'),
-          fetch('/api/queue')
+          fetch('/api/queue'),
+          fetch('/api/profiles')
         ]);
         const health = await healthRes.json();
         const queue = await queueRes.json();
+        candidateProfiles = await profilesRes.json();
 
         document.getElementById('daily-count').textContent = health.rateLimiter.dailyCount + ' / ' + health.rateLimiter.maxDaily;
         document.getElementById('flood-wait').textContent = health.rateLimiter.floodWaitRemainingSec + 's';
@@ -190,6 +246,10 @@ function getDashboardHtml(): string {
       const isSent = task.draftStatus === 'SENT';
       const isStale = !task.isFresh || task.draftStatus === 'STALE';
 
+      const profileOptions = candidateProfiles.map(p =>
+        \`<option value="\${p.id}" \${p.id === task.candidateProfileId ? 'selected' : ''}>\${p.name}</option>\`
+      ).join('');
+
       container.innerHTML = \`
         <div class="w-full h-full flex flex-col justify-between">
           <div>
@@ -198,14 +258,17 @@ function getDashboardHtml(): string {
               <div>
                 <span class="text-xs text-slate-400 uppercase tracking-wider font-semibold">Target Contact</span>
                 <h2 class="text-lg font-bold text-white font-mono mt-0.5">\${task.vacancy.extractedContact}</h2>
-                <div class="text-xs text-slate-400 mt-1 flex items-center gap-2">
-                  <span class="px-2 py-0.5 rounded bg-slate-800 text-slate-300">\${task.vacancy.contactType}</span>
+                <div class="text-xs text-slate-400 mt-2 flex flex-wrap items-center gap-2">
+                  <span class="px-2 py-0.5 rounded bg-slate-800 text-slate-300 font-mono">\${task.vacancy.contactType}</span>
                   <span>•</span>
-                  <span>Matched Persona: <strong class="text-slate-200">\${task.profile.name}</strong></span>
+                  <span>Persona:</span>
+                  <select onchange="switchPersona('\${task.id}', this.value)" class="bg-slate-900 border border-slate-700 text-slate-200 text-xs rounded px-2 py-0.5 focus:outline-none">
+                    \${profileOptions}
+                  </select>
                 </div>
               </div>
               <div class="text-right">
-                <span class="text-[11px] text-slate-500 font-mono">Context Hash: \${task.contextHash.slice(0, 12)}...</span>
+                <span class="text-[11px] text-slate-500 font-mono">Context Hash: \${task.contextHash.slice(0, 10)}...</span>
                 <div class="mt-1">
                   \${isSent ? '<span class="text-xs text-purple-400 font-bold">✓ DELIVERED TO TELEGRAM</span>' : isStale ? '<span class="text-xs text-red-400 font-bold">⚠ STALE DRAFT (BLOCKED)</span>' : '<span class="text-xs text-emerald-400 font-bold">● READY FOR HUMAN DISPATCH</span>'}
                 </div>
@@ -221,8 +284,17 @@ function getDashboardHtml(): string {
             <!-- Editable Draft Section -->
             <div class="mt-5">
               <div class="flex items-center justify-between mb-1.5">
-                <span class="text-xs font-semibold text-slate-300">Context-Aware AI Draft</span>
-                <span class="text-[11px] text-slate-500">Anti-Slop Direct Copy</span>
+                <span class="text-xs font-semibold text-slate-300">Context-Aware Outreach Draft</span>
+                <div class="flex items-center gap-2">
+                  <select id="ai-provider" class="bg-slate-900 border border-slate-700 text-slate-300 text-[11px] rounded px-2 py-0.5">
+                    <option value="gemini">Gemini API</option>
+                    <option value="ollama">Ollama Local</option>
+                    <option value="deterministic">Deterministic Fast</option>
+                  </select>
+                  <button onclick="regenerateDraft('\${task.id}')" \${isSent ? 'disabled' : ''} class="text-[11px] text-blue-400 hover:text-blue-300 underline font-medium disabled:opacity-40">
+                    Regenerate AI
+                  </button>
+                </div>
               </div>
               <textarea id="draft-text" rows="5" \${isSent ? 'disabled' : ''} class="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 text-xs text-slate-200 leading-relaxed font-sans focus:outline-none focus:border-blue-500 disabled:opacity-60">\${task.draftText || ''}</textarea>
             </div>
@@ -244,6 +316,29 @@ function getDashboardHtml(): string {
           </div>
         </div>
       \`;
+    }
+
+    async function switchPersona(taskId, profileId) {
+      await fetch(\`/api/tasks/\${taskId}/update-draft\`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ candidateProfileId: profileId })
+      });
+      await loadData();
+    }
+
+    async function regenerateDraft(taskId) {
+      const provider = document.getElementById('ai-provider').value;
+      const res = await fetch(\`/api/tasks/\${taskId}/regenerate\`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ provider })
+      });
+      const data = await res.json();
+      if (data.task) {
+        document.getElementById('draft-text').value = data.task.draftText;
+        await loadData();
+      }
     }
 
     async function triggerBoundedRun() {
@@ -302,12 +397,63 @@ function getDashboardHtml(): string {
         if (result.error) {
           alert('Dispatch Blocked: ' + result.error);
         } else {
-          alert('✓ Confirmed by Telegram Server! Message ID: ' + result.tgMessageId);
+          alert('✓ Confirmed by Telegram Server! Message ID: ' + result.tgMessageId + (result.isRealDispatch ? ' (Live MTProto)' : ' (Verified Sandbox)'));
         }
         await loadData();
       } catch (err) {
         alert('Network or dispatch error: ' + err.message);
       }
+    }
+
+    async function toggleRulesModal() {
+      const modal = document.getElementById('rules-modal');
+      modal.classList.toggle('hidden');
+      if (!modal.classList.contains('hidden')) {
+        await loadRules();
+      }
+    }
+
+    async function loadRules() {
+      const res = await fetch('/api/rules');
+      const data = await res.json();
+      const kwContainer = document.getElementById('rules-keywords-list');
+      const excContainer = document.getElementById('rules-exclusions-list');
+
+      kwContainer.innerHTML = data.keywords.map(k => \`
+        <span class="inline-flex items-center gap-1 text-[11px] bg-emerald-950/60 text-emerald-300 border border-emerald-800/80 px-2 py-0.5 rounded-full">
+          \${k}
+          <button onclick="removeRule('keyword', '\${k}')" class="hover:text-white font-bold ml-1">&times;</button>
+        </span>
+      \`).join('');
+
+      excContainer.innerHTML = data.exclusions.map(e => \`
+        <span class="inline-flex items-center gap-1 text-[11px] bg-rose-950/60 text-rose-300 border border-rose-800/80 px-2 py-0.5 rounded-full">
+          \${e}
+          <button onclick="removeRule('exclusion', '\${e}')" class="hover:text-white font-bold ml-1">&times;</button>
+        </span>
+      \`).join('');
+    }
+
+    async function addNewRule() {
+      const type = document.getElementById('new-rule-type').value;
+      const pattern = document.getElementById('new-rule-pattern').value.trim();
+      if (!pattern) return;
+      await fetch('/api/rules/add', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ type, pattern })
+      });
+      document.getElementById('new-rule-pattern').value = '';
+      await loadRules();
+    }
+
+    async function removeRule(type, pattern) {
+      await fetch('/api/rules/remove', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ type, pattern })
+      });
+      await loadRules();
     }
 
     // Auto-refresh every 10 seconds

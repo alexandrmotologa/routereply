@@ -173,4 +173,66 @@ program
     storage.close();
   });
 
+program
+  .command("import-tg <jsonFile>")
+  .description("Import real Telegram Desktop channel/chat export file (result.json)")
+  .action(async (jsonFile) => {
+    const dbPath = path.resolve(process.cwd(), "routereply.db");
+    const storage = new StorageEngine(dbPath);
+    const { TelegramExportImporter } = await import("../vacancies/importer.js");
+    const importer = new TelegramExportImporter(storage);
+
+    try {
+      console.log(pc.cyan(`[RouteReply] Importing Telegram export from ${jsonFile}...`));
+      const res = importer.importJsonFile(path.resolve(process.cwd(), jsonFile));
+      console.log(pc.green(`✓ Imported from channel: ${res.channelTitle} (${res.channelId})`));
+      console.log(`• Total messages parsed:  ${res.totalParsed}`);
+      console.log(`• New publications saved: ${pc.green(res.newIngested.toString())}`);
+      console.log(`• Skipped duplicates:     ${pc.yellow(res.skippedDuplicates.toString())}`);
+      console.log(pc.cyan(`Run 'routereply run' to filter and prepare reviewable drafts for these items.`));
+    } catch (err: any) {
+      console.log(pc.red(`✗ Import failed: ${err.message}`));
+    } finally {
+      storage.close();
+    }
+  });
+
+program
+  .command("rule")
+  .description("Manage dynamic keyword and exclusion filter rules")
+  .argument("<action>", "Action: 'list', 'add', or 'remove'")
+  .argument("[type]", "Rule type: 'keyword' or 'exclusion'")
+  .argument("[pattern...]", "Pattern or keyword phrase")
+  .action((action, type, patternParts) => {
+    const dbPath = path.resolve(process.cwd(), "routereply.db");
+    const storage = new StorageEngine(dbPath);
+    const pattern = patternParts?.join(" ");
+
+    if (action === "list") {
+      const keywords = storage.getFilterRules("keyword");
+      const exclusions = storage.getFilterRules("exclusion");
+      console.log(pc.cyan("\n=== Dynamic Filter Rules ===\n"));
+      console.log(pc.green(`Target Tech Keywords (${keywords.length}):`));
+      console.log(keywords.map((k) => `  + ${k}`).join("\n"));
+      console.log(pc.red(`\nDisqualifying Exclusions (${exclusions.length}):`));
+      console.log(exclusions.map((e) => `  - ${e}`).join("\n"));
+      console.log("");
+    } else if (action === "add") {
+      if (!type || !pattern) {
+        console.log(pc.red("Usage: routereply rule add <keyword|exclusion> <phrase>"));
+      } else {
+        storage.addFilterRule(type as any, pattern);
+        console.log(pc.green(`✓ Added ${type} rule: "${pattern}"`));
+      }
+    } else if (action === "remove") {
+      if (!type || !pattern) {
+        console.log(pc.red("Usage: routereply rule remove <keyword|exclusion> <phrase>"));
+      } else {
+        storage.removeFilterRule(type as any, pattern);
+        console.log(pc.yellow(`✓ Removed ${type} rule: "${pattern}"`));
+      }
+    }
+    storage.close();
+  });
+
 program.parse(process.argv);

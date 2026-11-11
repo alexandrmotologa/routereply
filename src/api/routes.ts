@@ -139,4 +139,76 @@ export function registerRoutes(
   app.get("/api/conversations/:contact", async (req: FastifyRequest<{ Params: { contact: string } }>) => {
     return storage.getConversationHistory(req.params.contact);
   });
+
+  // 10. Filter Rules API
+  app.get("/api/rules", async () => {
+    return {
+      keywords: storage.getFilterRules("keyword"),
+      exclusions: storage.getFilterRules("exclusion")
+    };
+  });
+
+  app.post("/api/rules/add", async (req: FastifyRequest<{ Body: { type: "keyword" | "exclusion"; pattern: string } }>, reply) => {
+    const { type, pattern } = req.body || {};
+    if (!type || !pattern) return reply.status(400).send({ error: "Missing type or pattern" });
+    storage.addFilterRule(type, pattern);
+    return { status: "added", type, pattern };
+  });
+
+  app.post("/api/rules/remove", async (req: FastifyRequest<{ Body: { type: "keyword" | "exclusion"; pattern: string } }>, reply) => {
+    const { type, pattern } = req.body || {};
+    if (!type || !pattern) return reply.status(400).send({ error: "Missing type or pattern" });
+    storage.removeFilterRule(type, pattern);
+    return { status: "removed", type, pattern };
+  });
+
+  // 11. Candidate Profiles Management
+  app.get("/api/profiles", async () => {
+    return storage.getAllProfiles();
+  });
+
+  app.post("/api/tasks/:taskId/regenerate", async (req: FastifyRequest<{ Params: { taskId: string }; Body: { provider?: "gemini" | "ollama" | "deterministic" } }>, reply) => {
+    const task = storage.getReplyTask(req.params.taskId);
+    if (!task) return reply.status(404).send({ error: "Task not found" });
+
+    const vacancy = storage.getVacancy(task.vacancyId);
+    const publication = storage.getPublication(vacancy?.publicationId || "");
+    const profile = storage.getProfile(task.candidateProfileId);
+
+    if (!vacancy || !publication || !profile) {
+      return reply.status(400).send({ error: "Incomplete context" });
+    }
+
+    const { computeContextHash } = await import("../replies/context.js");
+    const history = storage.getConversationHistory(vacancy.extractedContact);
+
+    const result = await draftGenerator.generateDraft({
+      vacancy,
+      profile,
+      rawText: publication.rawText,
+      conversationHistory: history,
+      preferredProvider: req.body?.provider
+    });
+
+    const newHash = computeContextHash({
+      publicationText: publication.rawText,
+      candidateProfileId: profile.id,
+      candidateProfileVersion: profile.version,
+      conversationHistory: history
+    });
+
+    storage.upsertReplyTask({
+      ...task,
+      draftText: result.draftText,
+      contextHash: newHash,
+      draftStatus: "DRAFTED",
+      staleReason: null
+    });
+
+    return {
+      task: storage.getReplyTask(task.id),
+      providerUsed: result.providerUsed,
+      wordCount: result.wordCount
+    };
+  });
 }
