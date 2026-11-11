@@ -1,0 +1,38 @@
+[
+  {
+    "id": "profile_fullstack_ai",
+    "name": "Fullstack AI Engineer",
+    "summary": "Senior TypeScript & Python engineer specializing in agentic workflows, autonomous LLM pipelines, Fastify/Next.js microservices, and high-throughput SQLite architectures.",
+    "skills": ["TypeScript", "Node.js", "Python", "FastAPI", "Next.js", "React", "SQLite", "Telegram Bot API", "LangChain", "LLM Fine-tuning"],
+    "portfolioLinks": {
+      "github": "https://github.com/alexandrmotologa",
+      "portfolio": "https://mtlg.site",
+      "recent_project": "https://github.com/alexandrmotologa/agentmem"
+    },
+    "workExperienceFacts": [
+      "Built low-latency agent memory engine handling 50k+ vector lookups with sub-5ms retrieval.",
+      "Designed and deployed production Telegram userbot pipelines with flood-wait mitigation handling 10k daily publications.",
+      "Led fullstack development of Next.js 15 apps with Server Actions and real-time SSE event streaming."
+    ],
+    "isDefault": true,
+    "version": 1
+  },
+  {
+    "id": "profile_frontend_specialist",
+    "name": "Senior Frontend & Mobile Engineer",
+    "summary": "Specialist in React 19, React Native / Expo, Tailwind CSS, and 60fps micro-interaction design.",
+    "skills": ["React", "React Native", "Expo", "TypeScript", "Tailwind CSS", "Framer Motion", "Reanimated", "Zustand"],
+    "portfolioLinks": {
+      "github": "https://github.com/alexandrmotologa",
+      "portfolio": "https://mtlg.site",
+      "demo": "https://github.com/alexandrmotologa/asocraft"
+    },
+    "workExperienceFacts": [
+      "Delivered 12+ production mobile and web applications with 99.9% crash-free sessions.",
+      "Engineered fluid gestures and 60fps animations with React Native Reanimated and Skia.",
+      "Achieved 100/100 Lighthouse performance and Core Web Vitals on high-traffic landing pages."
+    ],
+    "isDefault": false,
+    "version": 1
+  }
+]

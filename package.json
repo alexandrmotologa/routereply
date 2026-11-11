@@ -1,0 +1,50 @@
+{
+  "name": "routereply",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Human-in-the-loop Telegram vacancy ingestion, explainable multi-stage filtering, and context-aware outreach copilot with human-gated dispatch",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "routereply": "./bin/routereply.js"
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsx src/cli/index.ts",
+    "server": "tsx src/api/server.ts",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "seed": "tsx src/fixtures/seed.ts",
+    "lint": "tsc --noEmit"
+  },
+  "keywords": [
+    "telegram",
+    "automation",
+    "outreach",
+    "lead-generation",
+    "human-in-the-loop",
+    "sqlite",
+    "typescript",
+    "ai-copilot",
+    "developer-tools"
+  ],
+  "author": "Alexandr Motologa",
+  "license": "MIT",
+  "dependencies": {
+    "commander": "^13.1.0",
+    "fastify": "^5.2.1",
+    "@fastify/cors": "^10.0.2",
+    "picocolors": "^1.1.1",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.9",
+    "tsup": "^8.4.0",
+    "tsx": "^4.19.3",
+    "typescript": "^5.7.3",
+    "vitest": "^3.0.7"
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  }
+}

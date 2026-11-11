@@ -1,0 +1,182 @@
+[
+  {
+    "id": "pub_001_valid_ai",
+    "channelId": "tg_channel_ai_contracts",
+    "messageId": 101,
+    "rawText": "Looking for a Senior Fullstack AI Engineer for a 3-month contract. Stack: TypeScript, Next.js, FastAPI, Python, LLM workflows. Remote, $60-85/hr depending on experience. Please send your GitHub and past projects to @tech_recruiter_sam or telegram dm.",
+    "publishedAt": "2026-11-11T12:00:00Z",
+    "sourceUrl": "https://t.me/ai_contract_gigs/101",
+    "fingerprint": "fp_001_valid_ai"
+  },
+  {
+    "id": "pub_002_valid_frontend",
+    "channelId": "tg_channel_dev_jobs",
+    "messageId": 102,
+    "rawText": "Frontend Developer needed for a modern SaaS dashboard. Required: React 19, Tailwind CSS, TypeScript, fluid animation experience. Rate: $5000/mo. DM portfolio to @elena_product_hr",
+    "publishedAt": "2026-11-11T12:05:00Z",
+    "sourceUrl": "https://t.me/remote_tech_dev/102",
+    "fingerprint": "fp_002_valid_frontend"
+  },
+  {
+    "id": "pub_003_spam_short",
+    "channelId": "tg_channel_freelance_general",
+    "messageId": 103,
+    "rawText": "Join our crypto pumps channel now! t.me/free_crypto_moon",
+    "publishedAt": "2026-11-11T12:10:00Z",
+    "sourceUrl": "https://t.me/freelance_hub_all/103",
+    "fingerprint": "fp_003_spam_short"
+  },
+  {
+    "id": "pub_004_non_tech",
+    "channelId": "tg_channel_freelance_general",
+    "messageId": 104,
+    "rawText": "Urgent hiring: Senior Financial Accountant and Tax Auditor for European trading firm. Must know GAAP and IFRS. Contact @finance_hire_lead for interview details.",
+    "publishedAt": "2026-11-11T12:15:00Z",
+    "sourceUrl": "https://t.me/freelance_hub_all/104",
+    "fingerprint": "fp_004_non_tech"
+  },
+  {
+    "id": "pub_005_unpaid_intern",
+    "channelId": "tg_channel_dev_jobs",
+    "messageId": 105,
+    "rawText": "We are looking for enthusiastic Junior Python developers for an unpaid internship. Great learning opportunity and mentorship. Send resume to @startup_mentor_unpaid",
+    "publishedAt": "2026-11-11T12:20:00Z",
+    "sourceUrl": "https://t.me/remote_tech_dev/105",
+    "fingerprint": "fp_005_unpaid_intern"
+  },
+  {
+    "id": "pub_006_no_contact",
+    "channelId": "tg_channel_dev_jobs",
+    "messageId": 106,
+    "rawText": "Fullstack Node.js and React engineer wanted for ecommerce scaling project. 40 hours per week, remote. Great compensation. Comments are disabled on this post.",
+    "publishedAt": "2026-11-11T12:25:00Z",
+    "sourceUrl": "https://t.me/remote_tech_dev/106",
+    "fingerprint": "fp_006_no_contact"
+  },
+  {
+    "id": "pub_007_email_fallback",
+    "channelId": "tg_channel_ai_contracts",
+    "messageId": 107,
+    "rawText": "AI Solutions Architect contract. Building agentic automation pipelines with LangChain, Node.js and Vector DBs. Rate: $80/hr. Inquiries strictly via email to jobs@agentic-scale.io with subject 'Contract Architect'.",
+    "publishedAt": "2026-11-11T12:30:00Z",
+    "sourceUrl": "https://t.me/ai_contract_gigs/107",
+    "fingerprint": "fp_007_email_fallback"
+  },
+  {
+    "id": "pub_008_valid_backend_node",
+    "channelId": "tg_channel_dev_jobs",
+    "messageId": 108,
+    "rawText": "Senior Backend Engineer (Node.js, TypeScript, PostgreSQL, SQLite caching). Building high performance webhook relays and API bridges. Long term contract. Send your rate and GitHub to @david_infra_tech",
+    "publishedAt": "2026-11-11T12:35:00Z",
+    "sourceUrl": "https://t.me/remote_tech_dev/108",
+    "fingerprint": "fp_008_valid_backend_node"
+  },
+  {
+    "id": "pub_009_negative_crypto_token",
+    "channelId": "tg_channel_freelance_general",
+    "messageId": 109,
+    "rawText": "Looking for Web3 dev to launch meme coin smart contracts and telegram pump bot. Compensation is 100% commission in native tokens after pre-sale. Ping @moonshot_admin",
+    "publishedAt": "2026-11-11T12:40:00Z",
+    "sourceUrl": "https://t.me/freelance_hub_all/109",
+    "fingerprint": "fp_009_negative_crypto_token"
+  },
+  {
+    "id": "pub_010_valid_telegram_bot_dev",
+    "channelId": "tg_channel_ai_contracts",
+    "messageId": 110,
+    "rawText": "Need an experienced Telegram Bot / MTProto developer to build a customer lead routing system in Node.js or Python. Budget: $3500 fixed. Write to @alex_product_owner with examples of past bots.",
+    "publishedAt": "2026-11-11T12:45:00Z",
+    "sourceUrl": "https://t.me/ai_contract_gigs/110",
+    "fingerprint": "fp_010_valid_telegram_bot_dev"
+  },
+  {
+    "id": "pub_011_valid_react_native",
+    "channelId": "tg_channel_dev_jobs",
+    "messageId": 111,
+    "rawText": "Mobile App Developer (React Native / Expo). Need fluid UI redesign with gesture animations and offline SQLite sync. Remote worldwide. Contact @mobile_lead_anna",
+    "publishedAt": "2026-11-11T12:50:00Z",
+    "sourceUrl": "https://t.me/remote_tech_dev/111",
+    "fingerprint": "fp_011_valid_react_native"
+  },
+  {
+    "id": "pub_012_relocation_required",
+    "channelId": "tg_channel_dev_jobs",
+    "messageId": 112,
+    "rawText": "Senior Fullstack Engineer needed. Must relocate immediately to Munich office. No remote work permitted. Contact @munich_tech_onboarding",
+    "publishedAt": "2026-11-11T12:55:00Z",
+    "sourceUrl": "https://t.me/remote_tech_dev/112",
+    "fingerprint": "fp_012_relocation_required"
+  },
+  {
+    "id": "pub_013_valid_automation_architect",
+    "channelId": "tg_channel_ai_contracts",
+    "messageId": 113,
+    "rawText": "Seeking Workflow Automation Architect. Build scrapers, Zapier/n8n custom webhooks, Telegram bots, and automated data sync pipelines. Rate: $55-75/hr. Contact @sergei_lead_ops with your portfolio.",
+    "publishedAt": "2026-11-11T13:00:00Z",
+    "sourceUrl": "https://t.me/ai_contract_gigs/113",
+    "fingerprint": "fp_013_valid_automation_architect"
+  },
+  {
+    "id": "pub_014_too_short",
+    "channelId": "tg_channel_dev_jobs",
+    "messageId": 114,
+    "rawText": "dev needed pm me @guy",
+    "publishedAt": "2026-11-11T13:05:00Z",
+    "sourceUrl": "https://t.me/remote_tech_dev/114",
+    "fingerprint": "fp_014_too_short"
+  },
+  {
+    "id": "pub_015_valid_nextjs_fullstack",
+    "channelId": "tg_channel_dev_jobs",
+    "messageId": 115,
+    "rawText": "Fullstack Next.js & TypeScript developer needed for B2B portal. Integrations with Stripe, Supabase, and internal AI tools. $6000/month. Ping @natalie_startup_co",
+    "publishedAt": "2026-11-11T13:10:00Z",
+    "sourceUrl": "https://t.me/remote_tech_dev/115",
+    "fingerprint": "fp_015_valid_nextjs_fullstack"
+  },
+  {
+    "id": "pub_016_external_form",
+    "channelId": "tg_channel_dev_jobs",
+    "messageId": 116,
+    "rawText": "Senior Python/FastAPI Backend Engineer for fintech data pipelines. Fully remote. Apply exclusively through our application form: https://forms.gle/sampleDevForm2026",
+    "publishedAt": "2026-11-11T13:15:00Z",
+    "sourceUrl": "https://t.me/remote_tech_dev/116",
+    "fingerprint": "fp_016_external_form"
+  },
+  {
+    "id": "pub_017_valid_llm_eval",
+    "channelId": "tg_channel_ai_contracts",
+    "messageId": 117,
+    "rawText": "Looking for LLM Evaluation & Prompt Engineering specialist to build automated regression test suites for coding assistants. TypeScript/Python. Contact @eval_lead_mark",
+    "publishedAt": "2026-11-11T13:20:00Z",
+    "sourceUrl": "https://t.me/ai_contract_gigs/117",
+    "fingerprint": "fp_017_valid_llm_eval"
+  },
+  {
+    "id": "pub_018_customer_support",
+    "channelId": "tg_channel_freelance_general",
+    "messageId": 118,
+    "rawText": "Customer support representative for crypto exchange. Fluent English and Spanish required. 24/7 rotational shifts. Contact @cs_recruiter_fast",
+    "publishedAt": "2026-11-11T13:25:00Z",
+    "sourceUrl": "https://t.me/freelance_hub_all/118",
+    "fingerprint": "fp_018_customer_support"
+  },
+  {
+    "id": "pub_019_valid_senior_ts",
+    "channelId": "tg_channel_dev_jobs",
+    "messageId": 119,
+    "rawText": "Senior TypeScript Engineer wanted to architect CLI tools and desktop developer utilities. Deep knowledge of Node.js internals, SQLite, and AST tooling. Contact @boris_developer_advocate",
+    "publishedAt": "2026-11-11T13:30:00Z",
+    "sourceUrl": "https://t.me/remote_tech_dev/119",
+    "fingerprint": "fp_019_valid_senior_ts"
+  },
+  {
+    "id": "pub_020_valid_ai_agents",
+    "channelId": "tg_channel_ai_contracts",
+    "messageId": 120,
+    "rawText": "Contract gig: Autonomous AI agent pipeline optimization. Need an expert in multi-agent orchestration, tool use, and state machines. $75-90/hour. Reach out directly on TG: @mikhail_ai_founder",
+    "publishedAt": "2026-11-11T13:35:00Z",
+    "sourceUrl": "https://t.me/ai_contract_gigs/120",
+    "fingerprint": "fp_020_valid_ai_agents"
+  }
+]

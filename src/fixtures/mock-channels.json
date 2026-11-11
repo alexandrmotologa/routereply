@@ -1,0 +1,26 @@
+[
+  {
+    "id": "tg_channel_dev_jobs",
+    "title": "Remote Tech & Developer Vacancies",
+    "username": "remote_tech_dev",
+    "channelType": "channel",
+    "isActive": true,
+    "lastScannedMsgId": 100
+  },
+  {
+    "id": "tg_channel_ai_contracts",
+    "title": "AI & LLM Engineering Contract Gigs",
+    "username": "ai_contract_gigs",
+    "channelType": "channel",
+    "isActive": true,
+    "lastScannedMsgId": 45
+  },
+  {
+    "id": "tg_channel_freelance_general",
+    "title": "Freelance Hub - All Roles",
+    "username": "freelance_hub_all",
+    "channelType": "supergroup",
+    "isActive": true,
+    "lastScannedMsgId": 250
+  }
+]
