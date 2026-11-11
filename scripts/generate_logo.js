@@ -1,0 +1,129 @@
+import fs from "node:fs";
+import path from "node:path";
+
+export function generateRouteReplyLogoSvg() {
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <defs>
+    <!-- Background Squircle Gradient -->
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#f8fafc"/>
+    </linearGradient>
+
+    <!-- Outer Hexagon Gradient -->
+    <linearGradient id="hexGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#1e293b"/>
+    </linearGradient>
+
+    <!-- Electric Cyan Gradient for Optics & Routing Needles -->
+    <linearGradient id="cyanGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00f5ff"/>
+      <stop offset="100%" stop-color="#0284c7"/>
+    </linearGradient>
+
+    <!-- Cobalt Wing Accent Gradient -->
+    <linearGradient id="cobaltGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8"/>
+      <stop offset="100%" stop-color="#1d4ed8"/>
+    </linearGradient>
+
+    <!-- Drop Shadow for Subtle Depth -->
+    <filter id="softShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="16" stdDeviation="24" flood-color="#0f172a" flood-opacity="0.12"/>
+    </filter>
+  </defs>
+
+  <!-- 1. Luxury Squircle Container -->
+  <rect x="32" y="32" width="960" height="960" rx="220" fill="url(#bgGrad)" stroke="#e2e8f0" stroke-width="8" filter="url(#softShadow)"/>
+
+  <!-- 2. Hexagonal Gateway Frame (Precision Geodesic Vector) -->
+  <!-- Center at (512, 512), radius ~380 -->
+  <polygon points="
+    512, 132
+    841, 322
+    841, 702
+    512, 892
+    183, 702
+    183, 322"
+    fill="none" stroke="url(#hexGrad)" stroke-width="36" stroke-linejoin="round"/>
+
+  <!-- Inner Telemetry Dashed Hexagon -->
+  <polygon points="
+    512, 162
+    815, 337
+    815, 687
+    512, 862
+    209, 687
+    209, 337"
+    fill="none" stroke="#00f5ff" stroke-width="6" stroke-dasharray="16 12" stroke-opacity="0.45" stroke-linejoin="round"/>
+
+  <!-- 3. Watertight Base Silhouette Path (Solid Obsidian Underlay) -->
+  <path d="
+    M 512 210
+    L 590 280 L 680 340 L 760 440 L 790 560 L 760 670 L 690 730 L 610 750 L 512 790
+    L 414 750 L 334 730 L 264 670 L 234 560 L 264 440 L 344 340 L 434 280 Z"
+    fill="#0f172a"/>
+
+  <!-- 4. Low-Poly Falcon Facets (Messenger & Router Metaphor) -->
+  <!-- Left Wing & Outer Flanks -->
+  <polygon points="512,210 434,280 512,320" fill="#334155"/>
+  <polygon points="434,280 344,340 440,380" fill="#1e293b"/>
+  <polygon points="344,340 264,440 370,470" fill="#0f172a"/>
+  <polygon points="264,440 234,560 340,570" fill="#1e293b"/>
+  <polygon points="234,560 264,670 360,650" fill="#0f172a"/>
+  <polygon points="264,670 334,730 420,700" fill="#1e293b"/>
+  <polygon points="334,730 414,750 470,720" fill="#334155"/>
+  <polygon points="414,750 512,790 490,720" fill="#0f172a"/>
+
+  <!-- Right Wing & Outer Flanks (Symmetrical Mirror with Light Modulation) -->
+  <polygon points="512,210 590,280 512,320" fill="#475569"/>
+  <polygon points="590,280 680,340 584,380" fill="#334155"/>
+  <polygon points="680,340 760,440 654,470" fill="#1e293b"/>
+  <polygon points="760,440 790,560 684,570" fill="#334155"/>
+  <polygon points="790,560 760,670 664,650" fill="#1e293b"/>
+  <polygon points="760,670 690,730 604,700" fill="#334155"/>
+  <polygon points="690,730 610,750 554,720" fill="#475569"/>
+  <polygon points="610,750 512,790 534,720" fill="#1e293b"/>
+
+  <!-- Mid-Face & Brow Architecture -->
+  <polygon points="512,320 440,380 512,430" fill="#475569"/>
+  <polygon points="512,320 584,380 512,430" fill="#64748b"/>
+  <polygon points="440,380 370,470 450,480" fill="#334155"/>
+  <polygon points="584,380 654,470 574,480" fill="#475569"/>
+
+  <!-- Keel & Central Chest Facets -->
+  <polygon points="512,430 450,480 470,590 512,610" fill="#1e293b"/>
+  <polygon points="512,430 574,480 554,590 512,610" fill="#334155"/>
+  <polygon points="512,610 470,590 490,720" fill="#0f172a"/>
+  <polygon points="512,610 554,590 534,720" fill="#1e293b"/>
+
+  <!-- Geometric Falcon Beak (Aerodynamic Precision Wedge) -->
+  <polygon points="512,460 482,530 512,580" fill="#0ea5e9"/>
+  <polygon points="512,460 542,530 512,580" fill="#38bdf8"/>
+  <polygon points="482,530 512,580 512,600" fill="#0284c7"/>
+  <polygon points="542,530 512,580 512,600" fill="#0369a1"/>
+
+  <!-- Electric Cyan Predator Optics (Almond Geometric Eyes with Upward Cant) -->
+  <!-- Left Eye -->
+  <polygon points="410,430 460,420 470,442 422,448" fill="#00f5ff"/>
+  <polygon points="432,428 452,426 448,440 428,442" fill="#ffffff"/>
+  <polygon points="438,426 444,426 442,440 436,440" fill="#0f172a"/>
+
+  <!-- Right Eye -->
+  <polygon points="614,430 564,420 554,442 602,448" fill="#00f5ff"/>
+  <polygon points="592,428 572,426 576,440 596,442" fill="#ffffff"/>
+  <polygon points="586,426 580,426 582,440 588,440" fill="#0f172a"/>
+
+  <!-- Directional Routing Vector Chevron (Subtle Golden / Cyan Telemetry Touch) -->
+  <path d="M 512 245 L 536 275 L 512 265 L 488 275 Z" fill="#00f5ff" opacity="0.9"/>
+  <circle cx="512" cy="740" r="8" fill="#00f5ff"/>
+  <line x1="512" y1="670" x2="512" y2="732" stroke="#00f5ff" stroke-width="4" stroke-dasharray="6 4"/>
+</svg>`;
+}
+
+// Generate file
+const svgContent = generateRouteReplyLogoSvg();
+const targetSvgPath = path.resolve(process.cwd(), "docs/images/logo.svg");
+fs.writeFileSync(targetSvgPath, svgContent, "utf-8");
+console.log(`[Logo] Saved SVG to ${targetSvgPath}`);

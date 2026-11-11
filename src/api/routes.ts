@@ -167,8 +167,8 @@ export function registerRoutes(
     return storage.getAllProfiles();
   });
 
-  app.post("/api/profiles/upsert", async (req: FastifyRequest<{ Body: any }>, reply) => {
-    const profile = req.body;
+  app.post("/api/profiles/upsert", async (req: FastifyRequest<{ Body: Record<string, any> }>, reply) => {
+    const profile = req.body as Record<string, any>;
     if (!profile || !profile.id || !profile.name) {
       return reply.status(400).send({ error: "Missing required profile fields (id, name)" });
     }

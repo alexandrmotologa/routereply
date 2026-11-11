@@ -1,11 +1,11 @@
-<h1 align="center">RouteReply</h1>
+<div align="center">
+  <img src="docs/images/logo.png" alt="RouteReply Logo" width="130" height="130">
+  <h1>RouteReply</h1>
+  <p><strong>From Telegram post to reviewable work route and human-gated dispatch.</strong></p>
+</div>
 
 <p align="center">
-  <strong>From Telegram post to reviewable work route and human-gated dispatch.</strong>
-</p>
-
-<p align="center">
-  <img src="docs/images/routereply_demo.gif" alt="RouteReply Dashboard Demo" width="800">
+  <img src="docs/images/routereply_demo.gif" alt="RouteReply Walkthrough Demo" width="800">
 </p>
 
 ---
@@ -76,6 +76,32 @@ External communication is strictly gated behind an explicit human command. No me
 - **Anti-Slop Drafter (`src/replies/drafter.ts`, `validator.ts`):** Deterministic and LLM-compatible generator producing concise, proof-first outreach copy free of robotic AI clichés.
 - **Dispatcher & Rate Limiter (`src/dispatcher/`):** Single-controller lock with FloodWait protection and server confirmation recording.
 - **Operator Studio (`src/api/`):** Fastify REST API and embedded high-density dark mode dashboard.
+
+---
+
+## Operator Studio Interface
+
+The RouteReply Web Studio provides an interface for inspecting vacancies, reviewing explainable filter audit trails, modifying draft copy, managing candidate personas, and editing dynamic filter rules:
+
+<p align="center">
+  <img src="docs/images/routereply_dashboard.png" alt="Operator Queue Dashboard" width="800">
+</p>
+
+### Review & Audit Inspection
+
+Inspect five-stage filter evaluation breakdowns, candidate match profiles, and context hash freshness states before triggering human-gated dispatch:
+
+<p align="center">
+  <img src="docs/images/routereply_detail.png" alt="Vacancy Detail and Filter Audit" width="800">
+</p>
+
+### Persona & Dynamic Rule Management
+
+Switch between candidate CV personas and configure real-time keyword and exclusion rules directly from the studio:
+
+| Candidate Personas (Multi-CV) | Dynamic Filter Rules |
+|:---:|:---:|
+| <img src="docs/images/routereply_personas.png" alt="Persona Manager" width="400"> | <img src="docs/images/routereply_rules.png" alt="Filter Rules Manager" width="400"> |
 
 ---
 
