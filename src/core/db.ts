@@ -420,6 +420,11 @@ export class StorageEngine {
     }));
   }
 
+  public deleteProfile(id: string): boolean {
+    const res = this.db.prepare("DELETE FROM candidate_profiles WHERE id = ?").run(id) as any;
+    return Boolean(res && res.changes > 0);
+  }
+
   // --- Reply Tasks Operations ---
   public upsertReplyTask(task: ReplyTask): void {
     const stmt = this.db.prepare(`

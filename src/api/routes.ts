@@ -167,6 +167,30 @@ export function registerRoutes(
     return storage.getAllProfiles();
   });
 
+  app.post("/api/profiles/upsert", async (req: FastifyRequest<{ Body: any }>, reply) => {
+    const profile = req.body;
+    if (!profile || !profile.id || !profile.name) {
+      return reply.status(400).send({ error: "Missing required profile fields (id, name)" });
+    }
+    storage.upsertProfile({
+      id: profile.id,
+      name: profile.name,
+      summary: profile.summary || "",
+      skills: Array.isArray(profile.skills) ? profile.skills : [],
+      portfolioLinks: profile.portfolioLinks || {},
+      workExperienceFacts: Array.isArray(profile.workExperienceFacts) ? profile.workExperienceFacts : [],
+      isDefault: Boolean(profile.isDefault),
+      version: profile.version || 1
+    });
+    return { status: "saved", profile: storage.getProfile(profile.id) };
+  });
+
+  app.delete("/api/profiles/:id", async (req: FastifyRequest<{ Params: { id: string } }>, reply) => {
+    const success = storage.deleteProfile(req.params.id);
+    if (!success) return reply.status(404).send({ error: "Profile not found" });
+    return { status: "deleted", id: req.params.id };
+  });
+
   app.post("/api/tasks/:taskId/regenerate", async (req: FastifyRequest<{ Params: { taskId: string }; Body: { provider?: "gemini" | "ollama" | "deterministic" } }>, reply) => {
     const task = storage.getReplyTask(req.params.taskId);
     if (!task) return reply.status(404).send({ error: "Task not found" });

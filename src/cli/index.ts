@@ -235,4 +235,32 @@ program
     storage.close();
   });
 
+program
+  .command("login")
+  .description("Interactive MTProto login to generate authorized Telegram session string")
+  .action(async () => {
+    const { executeTelegramLogin } = await import("../dispatcher/auth.js");
+    await executeTelegramLogin();
+  });
+
+program
+  .command("listen")
+  .description("Start real-time MTProto event listener on monitored Telegram channels")
+  .action(async () => {
+    const dbPath = path.resolve(process.cwd(), "routereply.db");
+    const storage = new StorageEngine(dbPath);
+    const { RealTimeChannelListener } = await import("../dispatcher/listener.js");
+    const listener = new RealTimeChannelListener(storage);
+
+    await listener.start();
+
+    // Handle graceful shutdown
+    process.on("SIGINT", async () => {
+      console.log(pc.yellow("\nShutting down listener..."));
+      await listener.stop();
+      storage.close();
+      process.exit(0);
+    });
+  });
+
 program.parse(process.argv);
