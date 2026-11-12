@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="docs/images/logo.png" alt="RouteReply Logo" width="130" height="130">
+  <img src="docs/images/logo.png?raw=true" alt="RouteReply Logo" width="130" height="130" style="border-radius: 28px;">
   <h1>RouteReply</h1>
   <p><strong>From Telegram post to reviewable work route and human-gated dispatch.</strong></p>
 </div>
